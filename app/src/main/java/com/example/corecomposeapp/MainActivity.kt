@@ -13,6 +13,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,16 +23,51 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.corecomposeapp.viewmodel.MainViewModel
 
+@ExperimentalMaterial3Api
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MainScreen()
+            MainScreenVM()
 
         }
     }
 }
+
+@ExperimentalMaterial3Api
+@Composable
+fun MainScreenVM(viewModel: MainViewModel= MainViewModel()){
+
+    val newNameStateContent = viewModel.textFieldState.observeAsState("")
+
+    Surface(modifier = Modifier.fillMaxSize()) {
+        Column(verticalArrangement =Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally) {
+
+            GreetText(textFieldValue = newNameStateContent.value,
+                textFieldUpdate = {
+                        newName -> viewModel.onTextChanged(newName)
+                })
+
+        }
+    }
+}
+
+@ExperimentalMaterial3Api
+@Composable
+fun GreetText(
+    textFieldValue: String,
+    textFieldUpdate: (newName: String) -> Unit
+){
+    TextField(value = textFieldValue, onValueChange = textFieldUpdate)
+    Button(onClick = { }) {
+        Text(textFieldValue)
+    }
+}
+
+
 
 //All states will be in MainScreen composable
 @Composable
